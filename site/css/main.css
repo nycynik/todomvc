@@ -36,7 +36,7 @@ h2 {
 
 a {
 	color: #B83F45;
-	font-weight:bold;
+	font-weight: bold;
 }
 
 a:hover {
@@ -54,6 +54,10 @@ hr {
 	border-bottom: 1px dashed #F7F7F7;
 }
 
+var {
+	font-style: normal;
+}
+
 header p {
 	font-size: 30px;
 	line-height: 1.2;
@@ -64,7 +68,7 @@ header nav {
 	margin-top: 20px;
 }
 
-header nav a:first-child {
+header nav a:not(:last-child) {
 	margin-right: 5px;
 	margin-bottom: 5px;
 }
@@ -106,19 +110,24 @@ header nav a:first-child {
 	margin-bottom: 20px;
 }
 
-.whats-new {
-	list-style: none;
-}
-
 .whats-new li {
 	position: relative;
 	margin: 15px 0;
+	list-style: none;
 }
 
 .whats-new li:before {
 	content: '✔';
 	position: absolute;
 	left: -20px;
+}
+
+.whats-new li ul {
+	margin-left: 10px;
+}
+
+.whats-new li ul li {
+	margin-left: 20px;
 }
 
 .applist {
@@ -145,7 +154,7 @@ header nav a:first-child {
 	position: relative; /* popover */
 }
 
-.applist li[data-routing]:after {
+.applist .routing::after {
 	content: 'R';
 	position: relative;
 	top: -3px;
@@ -159,6 +168,10 @@ header nav a:first-child {
 	vertical-align: middle;
 	white-space: nowrap;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.applist .labs a{
+	color:#582C42;
 }
 
 .applist .label,
@@ -181,6 +194,24 @@ p .label {
 	-ms-columns: 2;
 	-o-columns: 2;
 	columns: 2;
+}
+
+.collapsed {
+	overflow: hidden;
+	max-height: 0;
+	-webkit-transition: max-height 1s;
+	-moz-transition: max-height 1s;
+	-ms-transition: max-height 1s;
+	-o-transition: max-height 1s;
+	transition: max-height 1s;
+}
+
+#news-expander {
+	display: none;
+}
+
+#news-expander:checked ~ .collapsed {
+	max-height: 999px;
 }
 
 .credit a {
@@ -277,6 +308,15 @@ p .label {
 
 .zocial.gray {
 	background-color: rgba(0, 0, 0, .5);
+}
+
+.zocial.ltgray {
+	color: inherit;
+	text-shadow: none;
+}
+
+.zocial.ltgray strong {
+	color: #B83F45;
 }
 
 .zocial.small {

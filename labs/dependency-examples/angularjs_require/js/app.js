@@ -1,5 +1,6 @@
+/*global define*/
 'use strict';
 
-define([], function () {
-    return angular.module('todomvc', []);
+define(['angular'], function (angular) {
+	return angular.module('todomvc', []);
 });

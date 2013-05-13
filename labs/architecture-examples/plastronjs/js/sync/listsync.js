@@ -1,3 +1,4 @@
+/*global goog, mvc, todomvc */
 goog.provide('todomvc.listsync');
 
 goog.require('mvc.LocalSync');

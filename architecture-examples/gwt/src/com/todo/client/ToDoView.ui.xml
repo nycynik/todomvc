@@ -2,6 +2,9 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:cv="urn:import:com.google.gwt.user.cellview.client"
 	xmlns:todo="urn:import:com.todo.client">
+	<ui:style>
+		.inline { display:inline; }
+	</ui:style>
 	<g:HTMLPanel>
 		<section id="todoapp">
 			<header id="header">
@@ -23,8 +26,19 @@
 				<span id="todo-count">
 					<strong class="number" ui:field="remainingTasksCount"></strong>
 					<span class="word" ui:field="remainingTasksLabel"></span>
-					left.
+					left
 				</span>
+				<ul id="filters">
+					<li>
+						<g:Hyperlink targetHistoryToken="/" styleName="{style.inline}" ui:field="routingAll">All</g:Hyperlink>
+					</li>
+					<li>
+						<g:Hyperlink targetHistoryToken="/active" styleName="{style.inline}" ui:field="routingActive">Active</g:Hyperlink>
+					</li>
+					<li>
+						<g:Hyperlink targetHistoryToken="/completed" styleName="{style.inline}" ui:field="routingCompleted">Completed</g:Hyperlink>
+					</li>
+				</ul>
 				<g:Button ui:field="clearCompleted">
 					Clear completed (<span class="number-done" ui:field="clearTasksCount"></span>)
 				</g:Button>
@@ -33,7 +47,6 @@
 
 		<footer id="info">
 			<p>Double-click to edit a todo</p>
-			<p>Template by <a href="http://sindresorhus.com">Sindre Sorhus</a></p>
 			<p>Created by <a href="http://www.scottlogic.co.uk/blog/colin/">Colin Eberhardt</a></p>
 			<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
 		</footer>
