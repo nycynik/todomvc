@@ -1,0 +1,6 @@
+node_modules
+libs/*
+tasks/*
+test/*
+src/android/*
+src/ios/*
