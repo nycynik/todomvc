@@ -2,8 +2,6 @@ define(function(require) {
 	var History = require('lavaca/net/History');
 	var Application = require('lavaca/mvc/Application');
 	var TodosController = require('app/net/TodosController');
-	var TodosCollection = require('app/models/TodosCollection');
-	var models = require('app/cache/models');
 	require('lavaca/ui/DustTemplate');
 	require('jquery-mobile/events/touch');
 	require('jquery-mobile/events/orientationchange');
@@ -22,8 +20,6 @@ define(function(require) {
 	 * Global application-specific object
 	 */
 	var app = new Application(function() {
-		// Create a colleciton in the globals models cache
-		models.set('todos', new TodosCollection());
 
 		// Initialize the routes
 		this.router.add({

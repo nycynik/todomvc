@@ -119,5 +119,5 @@ define(function(require) {
 		} catch(e) {}
 	}
 
-	return TodosCollection;
+	return new TodosCollection();
 });
