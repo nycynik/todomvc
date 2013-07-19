@@ -4,37 +4,22 @@ define(function(require) {
 	var ENTER_KEY = 13;
 
 	var PageView = require('lavaca/mvc/PageView');
-	var $ = require('$');
+	var TodosCollectionView = require('app/ui/views/TodosCollectionView');
 
 	/**
+	 * Todos view type
 	 * @class app.ui.views.TodosView
 	 * @super Lavaca.mvc.PageView
-	 * Todos view type
 	 */
 	var TodosView = PageView.extend(function TodosView() {
-		var modelChangeHandler;
-
 		// Call the super class' constructor
 		PageView.apply(this, arguments);
-
+		this.mapChildView('#todo-list', TodosCollectionView, this.model);
 		// Map DOM and model events to event handler
 		// functions declared below
-		modelChangeHandler = modelChange.bind(this);
 		this.mapEvent({
 			'#new-todo': {
 				keypress: addTodo.bind(this)
-			},
-			'button.destroy': {
-				click: remove.bind(this)
-			},
-			'input.toggle': {
-				change: toggleComplete.bind(this)
-			},
-			'li': {
-				dblclick: startEditing.bind(this)
-			},
-			'input.edit': {
-				keypress: editTodo.bind(this)
 			},
 			'input#toggle-all': {
 				change: toggleAll.bind(this)
@@ -42,14 +27,15 @@ define(function(require) {
 			'button#clear-completed': {
 				click: removeCompleted.bind(this)
 			},
-			model: {
-				'change': modelChangeHandler,
-				'addItem': modelChangeHandler,
-				'moveItem': modelChangeHandler,
-				'removeItem': modelChangeHandler,
-				'changeItem': modelChangeHandler
+      model: {
+        'addItem': modelChange.bind(this),
+        'moveItem': modelChange.bind(this),
+        'removeItem': modelChange.bind(this),
+        'changeItem': modelChange.bind(this)
 			}
 		});
+
+		this.countIsZero = !this.model.count();
 	},{
 		/**
 		 * @field {String} template
@@ -77,37 +63,36 @@ define(function(require) {
 	function modelChange() {
 		clearTimeout(this.redrawTimeout);
 		this.redrawTimeout = setTimeout(function() {
-			this.redraw();
+			var count = this.model.count();
+			if (count === 0) {
+				this.countIsZero = true;
+				this.redraw();
+			} else if (this.countIsZero && count) {
+				this.countIsZero = false;
+				this.redraw();
+			} else {
+				this.redraw('#footer');
+			}
 		}.bind(this));
 	}
 
 	// Create a new Todo when the ENTER
 	// key is pressed
 	function addTodo(e) {
-		var val;
+		var val,
+				input = e.currentTarget;
 		if (e.which === ENTER_KEY) {
-			val = e.currentTarget.value.trim();
+			val = input.value.trim();
 			if (val) {
 				this.model.add({
 					id: Date.now(),
 					title: val,
 					completed: false
 				});
+				input.value = '';
 			}
 			e.preventDefault();
 		}
-	}
-
-	// Remove the Todo when the 'x' is clicked
-	function remove(e) {
-		var todo = getTodoForEl(e.currentTarget, this.model);
-		this.model.remove(todo);
-	}
-
-	// Set the completion state of a single model
-	function toggleComplete(e) {
-		var todo = getTodoForEl(e.currentTarget, this.model);
-		todo.set('completed', e.currentTarget.checked);
 	}
 
 	// Set the completion state of all models
@@ -117,42 +102,9 @@ define(function(require) {
 		});
 	}
 
-	// Start editing a Todo
-	function startEditing(e) {
-		var $el = $(e.currentTarget);
-		$el.addClass('editing');
-		$el.find('input.edit').focus();
-	}
-
-	// Commit the edit when the ENTER key
-	// is pressed
-	function editTodo(e) {
-		var todo;
-		var val;
-		if (e.which === ENTER_KEY) {
-			todo = getTodoForEl(e.currentTarget, this.model);
-			val = e.currentTarget.value.trim();
-			if (todo && val) {
-				todo.set('title', val);
-			}
-			e.preventDefault();
-		}
-	}
-
 	// Remove all completed Todos
 	function removeCompleted() {
 		this.model.removeCompleted();
-	}
-
-	/* ---- Private functions ---- */
-
-	// Given an `el` that is a child of one of the `li`
-	// elements, this function will find the `data-id` attribute
-	// attribute on the `li` and then return the corresponding
-	// model in `collection`
-	function getTodoForEl(el, collection) {
-		var id = $(el).parents('li').attr('data-id');
-		return collection.first({id: parseInt(id, 10)});
 	}
 
 	return TodosView;

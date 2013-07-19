@@ -6,10 +6,10 @@ define(function(require) {
 	var LOCAL_STORAGE_KEY = 'todos-lavaca-require';
 
 	/**
-	 * @class app.models.TodosCollection
-	 * @super Lavaca.mvc.Collection
 	 * A collection of ToDo items that saves
 	 * and restores its data from localStorage
+	 * @class app.models.TodosCollection
+	 * @super Lavaca.mvc.Collection
 	 */
 	var TodosCollection = Collection.extend(function TodosCollection() {
 		// Call the super class' constructor
@@ -18,7 +18,6 @@ define(function(require) {
 		// Set some computed properties on this model
 		this.apply({
 			allComplete: allComplete,
-			filteredItems: filteredItems,
 			itemsLeft: itemsLeft,
 			itemsCompleted: itemsCompleted
 		});
@@ -55,22 +54,6 @@ define(function(require) {
 			}
 		});
 		return allAreComplete;
-	}
-
-	// Returns an array of objects for the current
-	// filter ('all', 'active', or 'completed')
-	function filteredItems() {
-		var filter = this.get('filter');
-		var shouldBeComplete = filter === 'completed';
-		var results = [];
-
-		this.each(function(index, model) {
-			if (filter === 'all' || model.get('completed') === shouldBeComplete) {
-				results.push(model.toObject());
-			}
-		});
-
-		return results;
 	}
 
 	// Returns a count of incomplete items

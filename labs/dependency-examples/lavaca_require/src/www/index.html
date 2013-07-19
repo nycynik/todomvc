@@ -1,62 +1,61 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Lavaca • TodoMVC</title>
-    <link rel="stylesheet" href="assets/todomvc-common/base.css">
-  </head>
-  <body>
-    <section id="todoapp">
-    </section>
-    <footer id="info">
-      <p>Double-click to edit a todo</p>
-      <p>Created by <a href="https://github.com/mutualmobile/" data-external>Mutual Mobile</a></p>
-      <p>Part of <a href="http://todomvc.com" data-external>TodoMVC</a></p>
-    </footer>
-    <script type="text/dust-template" data-name="todos">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>Lavaca • TodoMVC</title>
+		<link rel="stylesheet" href="assets/todomvc-common/base.css">
+	</head>
+	<body>
+		<section id="todoapp">
+		</section>
+		<footer id="info">
+			<p>Double-click to edit a todo</p>
+			<p>Created by <a href="https://github.com/mutualmobile/" data-external>Mutual Mobile</a></p>
+			<p>Part of <a href="http://todomvc.com" data-external>TodoMVC</a></p>
+		</footer>
+		<script type="text/dust-template" data-name="todos">
 
-        <header id="header">
-          <h1>todos</h1>
-          <input id="new-todo" placeholder="What needs to be done?" autofocus>
-        </header>
-        {?items}
-          <section id="main">
-            <input id="toggle-all" type="checkbox" {?allComplete}checked{/allComplete}>
-            <label for="toggle-all">Mark all as complete</label>
-            <ul id="todo-list">
-              {#filteredItems}
-                <li {?completed}class="completed"{/completed} data-id="{id}">
-                  <div class="view">
-                    <input class="toggle" type="checkbox" {?completed}checked{/completed}>
-                    <label>{title}</label>
-                    <button class="destroy"></button>
-                  </div>
-                  <input class="edit" value="{title}">
-                </li>
-              {/filteredItems}
-            </ul>
-          </section>
-          <footer id="footer">
-            <span id="todo-count"><strong>{itemsLeft}</strong> item{@ne key=itemsLeft value="1" type="number"}s{/ne} left</span>
-            <ul id="filters">
-              <li>
-                <a {@eq key=filter value="all"}class="selected"{/eq} href="/">All</a>
-              </li>
-              <li>
-                <a {@eq key=filter value="active"}class="selected"{/eq} href="/active">Active</a>
-              </li>
-              <li>
-                <a {@eq key=filter value="completed"}class="selected"{/eq} href="/completed">Completed</a>
-              </li>
-            </ul>
-            {@gt key=itemsCompleted value="0"}<button id="clear-completed">Clear completed ({itemsCompleted})</button>{/gt}
-          </footer>
-        {/items}
+				<header id="header">
+					<h1>todos</h1>
+					<input id="new-todo" placeholder="What needs to be done?" autofocus>
+				</header>
+				{?items}
+					<section id="main">
+						<input id="toggle-all" type="checkbox" {?allComplete}checked{/allComplete}>
+						<label for="toggle-all">Mark all as complete</label>
+						<ul id="todo-list" {@eq key=filter value="active"}class="active"{/eq}{@eq key=filter value="completed"}class="completed"{/eq}></ul>
+					</section>
+					<footer id="footer">
+						<span id="todo-count"><strong>{itemsLeft}</strong> item{@ne key=itemsLeft value="1" type="number"}s{/ne} left</span>
+						<ul id="filters">
+							<li>
+								<a {@eq key=filter value="all"}class="selected"{/eq} href="/">All</a>
+							</li>
+							<li>
+								<a {@eq key=filter value="active"}class="selected"{/eq} href="/active">Active</a>
+							</li>
+							<li>
+								<a {@eq key=filter value="completed"}class="selected"{/eq} href="/completed">Completed</a>
+							</li>
+						</ul>
+						{@gt key=itemsCompleted value="0"}<button id="clear-completed">Clear completed ({itemsCompleted})</button>{/gt}
+					</footer>
+				{/items}
 
-    </script>
-    <script src="assets/todomvc-common/base.js"></script>
-    <script src="js/libs/require.js"></script>
-    <script src="js/app/boot.js"></script>
-  </body>
+		</script>
+		<script type="text/dust-template" data-name="todo-item">
+
+			<div class="view" data-id="{id}">
+				<input class="toggle" type="checkbox" {?completed}checked{/completed}>
+				<label>{title}</label>
+				<button class="destroy"></button>
+			</div>
+			<input class="edit" value="{title}">
+			
+		</script>
+		<script src="assets/todomvc-common/base.js"></script>
+		<script src="js/libs/require.js"></script>
+		<script src="js/app/boot.js"></script>
+	</body>
 </html>

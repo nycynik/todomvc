@@ -35,27 +35,26 @@ module.exports = function( grunt ) {
         js: 'js/app.min.js',
         cordova: 'js/cordova.js'
       },
-      pkg: {
+      'package': {
         root: 'pkg',
-        android: '<%= paths.pkg.root %>/<%= pkg.name %>.apk',
-        ios: '<%= paths.pkg.root %>/<%= pkg.name %>.ipa'
+        android: '<%= paths.package.root %>/<%= package.name %>.apk',
+        ios: '<%= paths.package.root %>/<%= package.name %>.ipa'
       },
-      docs: 'docs'
+      doc: 'doc'
     },
 
-    pkg: grunt.file.readJSON('package.json'),
+    'package': grunt.file.readJSON('package.json'),
 
     clean: {
       tmp: ['<%= paths.tmp.root %>'],
       build: ['<%= paths.build.root %>'],
-      pkg: ['<%= paths.pkg.root %>']
+      'package': ['<%= paths.package.root %>']
     },
 
     uglify: {
       all: {
         options: {
-          banner: '/*! <%= pkg.title %> v<%= pkg.version %> | License: <%= pkg.license %> */\n',
-          report: 'gzip'
+          banner: '/*! <%= package.title %> v<%= package.version %> | License: <%= package.license %> */\n'
         },
         files: [
           {
@@ -136,34 +135,16 @@ module.exports = function( grunt ) {
     },
 
     jasmine: {
-      all: ['test/runner.html']
-    },
-
-    dustjs: {
-      all: {
-        files: [
-          {
-            src: '<%= paths.src.www %>/templates/**/*.html',
-            dest: '<%= paths.src.www %>/js/app/ui/templates.js'
-          }
-        ]
+      all: ['test/runner.html'],
+      options: {
+        junit: {
+          path: 'log/tests',
+          consolidate: true
+        }
       }
     },
 
-    docs: {
-      all: {
-        options: {
-          atnotate: '<%= paths.lib.atnotate %>'
-        },
-        files: [
-          {
-            src: '<%= paths.src.www %>',
-            dest: 'docs',
-            exclude: ['es5-shim.js', 'jquery-2.0.0.js', 'require-dust.js', 'require.js']
-          }
-        ]
-      }
-    },
+
 
     'amd-test': {
       mode: 'jasmine',
@@ -190,9 +171,32 @@ module.exports = function( grunt ) {
     },
 
     server: {
-      port: 8080,
-      //base: BASE_DIR
-      base: 'src/www'
+      local: {
+        options: {
+          port: 8080,
+          vhost: 'localhost',
+          base: 'src/www',
+          apiPrefix: '/api',
+          apiBaseUrl: 'configure-to-specific-api',
+          proxyPort: '80',// change to 443 for https
+          proxyProtocol: 'http'//change to https if ssl is required
+        }
+      },
+      prod: {
+        options: {
+          port: 8080,
+          vhost: 'localhost',
+          base: 'build/www',
+          apiPrefix: '/api*'
+        }
+      },
+      doc: {
+        options: {
+          port: 8080,
+          vhost: 'localhost',
+          base: 'doc'
+        }
+      }
     },
 
     copy: {
@@ -236,6 +240,7 @@ module.exports = function( grunt ) {
                 '<%= paths.out.index %>',
                 '<%= paths.out.css %>',
                 '<%= paths.out.js %>',
+                'configs/**/*',
                 'assets/**/*',
                 'messages/**/*'
               ],
@@ -245,6 +250,28 @@ module.exports = function( grunt ) {
 
           return files;
         })()
+      }
+    },
+
+    pkg: {
+      ios: {
+        options: {
+          identity: 'iPhone Distribution: Mutual Mobile'
+        },
+        files: [
+          {
+            src: '<%= paths.build.ios %>',
+            dest: '<%= paths.package.ios %>'
+          }
+        ]
+      },
+      android: {
+        files: [
+          {
+            src: '<%= paths.build.android %>',
+            dest: '<%= paths.package.android %>'
+          }
+        ]
       }
     },
 
@@ -273,6 +300,25 @@ module.exports = function( grunt ) {
       }
     },
 
+    blueprint: {
+      options: {
+        dest: '<%= paths.src.www %>/js/app',
+        appName: 'app'
+      },
+      lavaca:{
+        options:{
+          map:{
+            View: 'ui/views/View',
+            PageView: 'ui/views/pageviews/PageView',
+            Model: 'models/Model',
+            Collection: 'collections/Collection',
+            Controller: 'net/Controller',
+            Control: 'ui/views/controls/Control'
+          }
+        }
+      }
+    },
+
     requirejs: {
       baseUrl: '<%= paths.src.www %>/js',
       mainConfigFile: '<%= paths.src.www %>/js/app/boot.js',
@@ -285,6 +331,29 @@ module.exports = function( grunt ) {
       removeCombined: false,
       preserveLicenseComments: false,
       logLevel: 0
+    },
+
+    yuidoc: {
+      compile: {
+        name: '<%= pkg.name %>',
+        description: '<%= pkg.description %>',
+        version: '<%= pkg.version %>',
+        url: '<%= pkg.homepage %>',
+        options: {
+          paths: '<%= paths.src.www %>/js',
+          outdir: '<%= paths.doc %>',
+          exclude: '<%= paths.src.www %>/js/libs',
+          linkNatives: true,
+          themedir: 'libs/yuidoc/themes/default'
+        }
+      }
+    },
+
+    watch: {
+      scripts: {
+        files: ['src/www/**/*.js'],
+        tasks: ['yuidoc']
+      }
     }
   });
 
@@ -292,7 +361,7 @@ module.exports = function( grunt ) {
   grunt.loadTasks('tasks/pkg');
   grunt.loadTasks('tasks/docs');
   grunt.loadTasks('tasks/preprocess');
-  grunt.loadNpmTasks('grunt-dustjs');
+  grunt.loadTasks('tasks/blueprint');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
@@ -303,11 +372,17 @@ module.exports = function( grunt ) {
   grunt.loadNpmTasks('grunt-amd-dist');
   grunt.loadNpmTasks('grunt-amd-test');
   grunt.loadNpmTasks('grunt-amd-check');
+  grunt.loadNpmTasks('grunt-contrib-yuidoc');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('build', 'Builds app with specified config', function(env) {
     env = env || 'local';
-    grunt.task.run('clean:tmp', 'copy:tmp', 'less', 'concat', 'amd-dist', 'uglify', 'copy:build', 'preprocess::'+env, 'clean:tmp');
+    grunt.task.run('clean:tmp', 'clean:build', 'copy:tmp', 'less', 'concat', 'amd-dist', 'uglify', 'copy:build', 'preprocess::'+env, 'clean:tmp');
   });
+
+  grunt.registerTask('default', ['amd-test', 'jasmine', 'server']);
+
   grunt.registerTask('test', ['amd-test', 'jasmine']);
 
+  grunt.registerTask('doc', 'compiles documentation and starts a server', ['yuidoc', 'server:doc']);
 };
