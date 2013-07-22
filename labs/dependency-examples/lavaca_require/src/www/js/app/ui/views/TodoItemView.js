@@ -114,7 +114,7 @@ define(function(require) {
 
   // Remove the Todo when the 'x' is clicked
   function remove() {
-    this.parentView.trigger('removeView', {model: this.model});
+    this.trigger('removeView', {model: this.model});
   }
 
   return TodosView;

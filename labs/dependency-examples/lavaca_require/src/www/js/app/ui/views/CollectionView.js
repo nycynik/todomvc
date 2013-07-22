@@ -25,8 +25,6 @@ define(function(require) {
 				'changeItem': this.onItemEvent.bind(this)
 			}
 		});
-		this.on('removeView', this.onRemoveView.bind(this));
-		this.render();
 	},{
 		/**
 		 * A class name added to the view container
@@ -82,7 +80,9 @@ define(function(require) {
 				throw 'Invalid item view insertion index';
 			}
 			view = new this.TView(this.itemEl(model, index), model, this);
+			this.childViews.set(view.id, view);
 			this.collectionViews.splice(insertIndex, 0, view);
+			this.applyChildViewEvent(view);
 			if (insertIndex === 0) {
 				this.el.prepend(view.el[0]);
 			} else if (insertIndex === count) {
@@ -96,12 +96,27 @@ define(function(require) {
 			return view;
 		},
 		/**
+     * adds listeners for a specific child view 
+     * @method applyChildViewEvent
+     * @param {Object} [view] the view to add listeners to
+     */
+		applyChildViewEvent: function(view) {
+			var childViewEventMap = this.childViewEventMap,
+					type;
+			for (type in childViewEventMap) {
+				if (view instanceof childViewEventMap[type].TView) {
+					view.on(type, childViewEventMap[type].callback);
+				}
+			}
+		},
+		/**
 		 * Remove and disposes a view
 		 * @method removeItemView
 		 * @param {Number} [index] the index of the view to remove
 		 */
 		removeItemView: function(index) {
 			var view = this.collectionViews.splice(index, 1)[0];
+			this.childViews.remove(view.id);
 			view.el.remove();
 			view.dispose();
 		},
@@ -184,15 +199,6 @@ define(function(require) {
 					aSibling = a.nextSibling === b ? a : a.nextSibling;
 				b.parentNode.insertBefore(a, b);
 				aParent.insertBefore(b, aSibling);
-		},
-		/**
-		 * Removes a view when removeView event it triggered
-		 * @method swapViews
-		 * @param {Obejct} [viewA] a view
-		 * @param {Obejct} [viewB] another view
-		 */
-		onRemoveView: function(e) {
-			this.model.remove(e.model);
 		}
 
 	});
