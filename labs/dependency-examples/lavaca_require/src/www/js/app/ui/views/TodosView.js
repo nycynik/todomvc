@@ -5,6 +5,7 @@ define(function(require) {
 
 	var PageView = require('lavaca/mvc/PageView');
 	var TodosCollectionView = require('app/ui/views/TodosCollectionView');
+	require('rdust!templates/todos');
 
 	/**
 	 * Todos view type
@@ -14,6 +15,7 @@ define(function(require) {
 	var TodosView = PageView.extend(function TodosView() {
 		// Call the super class' constructor
 		PageView.apply(this, arguments);
+		// Map collection view to #todo-list
 		this.mapChildView('#todo-list', TodosCollectionView, this.model);
 		// Map DOM and model events to event handler
 		// functions declared below
@@ -42,7 +44,7 @@ define(function(require) {
 		 * @default 'example'
 		 * The name of the template used by the view
 		 */
-		template: 'todos',
+		template: 'templates/todos',
 		/**
 		 * @field {String} className
 		 * @default 'example'

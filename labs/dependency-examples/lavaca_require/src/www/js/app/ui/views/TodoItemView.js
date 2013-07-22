@@ -5,6 +5,7 @@ define(function(require) {
 
   var View = require('lavaca/mvc/View');
   var $ = require('$');
+  require('rdust!templates/todo-item');
 
   /**
    * Todos view type
@@ -38,7 +39,7 @@ define(function(require) {
      * @property template
      * @type String
      */
-    template: 'todo-item',
+    template: 'templates/todo-item',
     /**
      * A class name added to the view container
      * @property className
