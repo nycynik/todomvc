@@ -5,6 +5,8 @@ define(function(require) {
 	var equals = require('mout/object/equals');
 	var $ = require('$');
 
+	var _UNDEFINED;
+
 	/**
 	 * A view for synchronizing a collection of models with sub views
 	 * @class app.ui.views.CollectionView
@@ -13,6 +15,7 @@ define(function(require) {
 	var CollectionView = View.extend(function CollectionView() {
 		// Call the super class' constructor
 		View.apply(this, arguments);
+		this.el.empty();
 		this.collectionViews = [];
 		this.mapEvent({
 			model: {
@@ -32,14 +35,19 @@ define(function(require) {
 		 */
 		className: 'collection-view',
 		/**
-		 * A type of element created to attach each item view
+		 * A function that should return a jQuery element
+		 * that will be used as the `el` for a particular
+		 * item in the collection. The function is passed
+		 * two parameters, the model and the index.
 		 * @property itemEl
-		 * @type String
+		 * @type jQuery
 		 */
-		itemEl: 'div',
+		itemEl: function(model, index) {
+			return $('<div/>'); // default to <li>?
+		},
 		/**
 		 * The view type used for each item view
-		 * @property itemEl
+		 * @property TView
 		 * @type lavaca.mvc.View
 		 */
 		TView: View,
@@ -66,15 +74,22 @@ define(function(require) {
 		 * @param {Number} [index] the index to insert the view in the DOM
 		 */
 		addItemView: function(model, index) {
-			var view = new this.TView($('<' + this.itemEl + '>'), model, this),
-					count = this.collectionViews.length,
-					insertIndex = index === null || index === undefined ? count : index;
+			var count = this.collectionViews.length,
+					insertIndex = index === null || index === _UNDEFINED ? count : index,
+					view;
+
+			if (insertIndex < 0 || insertIndex > count) {
+				throw 'Invalid item view insertion index';
+			}
+			view = new this.TView(this.itemEl(model, index), model, this);
 			this.collectionViews.splice(insertIndex, 0, view);
 			if (insertIndex === 0) {
 				this.el.prepend(view.el[0]);
+			} else if (insertIndex === count) {
+				this.el.append(view.el[0]);
 			} else {
 				this.el
-					.find(this.itemEl)
+					.children()
 					.eq(insertIndex-1)
 					.after(view.el[0]);
 			}
@@ -92,39 +107,19 @@ define(function(require) {
 		},
 		/**
 		 * Returns the index of a view
-		 * @method getViewsIndexByModel
+		 * @method getViewIndexByModel
 		 * @param {Object} [model] the model of the view to find
 		 */
-		getViewsIndexByModel: function(model) {
-			var collectionViewIndex = -1,
-					modelObj = model.toObject();
+		getViewIndexByModel: function(model) {
+			var collectionViewIndex = -1;
 			this.collectionViews.every(function(view, i) {
-				if (equals(view.model.toObject(), modelObj)) {
+				if (view.model === model) {
 					collectionViewIndex = i;
 					return false;
 				}
 				return true;
 			});
 			return collectionViewIndex;
-		},
-		/**
-		 * Returns the index of a model in an array of models
-		 * @method getModelIndexInModels
-		 * @param {Object} [model] needle
-		 * @param {Array} [models] haystack
-		 */
-		getModelIndexInModels: function(model, models) {
-			var index = -1,
-					modelObj;
-			modelObj = model.toObject();
-			models.every(function(item, i) {
-				if (equals(item.toObject(), modelObj)) {
-					index = i;
-					return false;
-				}
-				return true;
-			});
-			return index;
 		},
 		/**
 		 * The filter to run against the collection
@@ -136,7 +131,7 @@ define(function(require) {
 			return true;
 		},
 		/**
-		 * Event handler for all collection events that produces all add, remove, and move actions 
+		 * Event handler for all collection events that produces all add, remove, and move actions
 		 * @method modelFilter
 		 * @param {Obejct} [e] the event
 		 */
@@ -149,17 +144,17 @@ define(function(require) {
 					oldIndex,
 					modelIndex,
 					temp;
-			// Add new views    
+			// Add new views
 			while(model = models[++i]) {
-				viewIndex = this.getViewsIndexByModel(model);
+				viewIndex = this.getViewIndexByModel(model);
 				if (viewIndex === -1) {
 					this.addItemView(model, i);
 				}
 			}
-			// Remove Old Views 
+			// Remove Old Views
 			i = -1;
 			while(view = this.collectionViews[++i]) {
-				modelIndex = this.getModelIndexInModels(view.model, models);
+				modelIndex = models.indexOf(view.model);
 				if (modelIndex === -1) {
 					this.removeItemView(i);
 				}
@@ -167,7 +162,7 @@ define(function(require) {
 			// Move any existing views
 			i = -1;
 			while(model = models[++i]) {
-				oldIndex = this.getViewsIndexByModel(model);
+				oldIndex = this.getViewIndexByModel(model);
 				if (oldIndex !== i) {
 					this.swapViews(this.collectionViews[i], this.collectionViews[oldIndex]);
 					temp = this.collectionViews[oldIndex];

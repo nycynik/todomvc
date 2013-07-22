@@ -1,7 +1,8 @@
 define(function(require) {
 
-	var CollectionView = require('app/ui/views/CollectionView');
-	var TodoItemView = require('app/ui/views/TodoItemView');
+	var CollectionView = require('app/ui/views/CollectionView'),
+			TodoItemView = require('app/ui/views/TodoItemView'),
+			$ = require('$');
 
 	/**
 	 * Todos view type
@@ -16,11 +17,16 @@ define(function(require) {
 		 */
 		className: 'todos-collection-view',
 		/**
-		 * A type of element created to attach each item view
+		 * A function that should return a jQuery element
+		 * that will be used as the `el` for a particular
+		 * item in the collection. The function is passed
+		 * two parameters, the model and the index.
 		 * @property itemEl
-		 * @type String
+		 * @type jQuery
 		 */
-		itemEl: 'li',
+		itemEl: function() {
+			return $('<li/>');
+		},
 		/**
 		 * The view type used for each item view
 		 * @property itemEl
