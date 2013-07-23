@@ -1,17 +1,13 @@
 require.config({
 	baseUrl: 'js',
 	paths: {
-		'es5-shim': 'libs/es5-shim',
-		'$': 'libs/jquery-2.0.0',
-		'jquery': 'libs/jquery-2.0.0',
-		'jquery-mobile': '../bower_components/jquery-mobile',
-		'cordova': 'libs/cordova',
+		'$': '../bower_components/jquery/jquery.min',
+		'jquery': '../bower_components/jquery/jquery.min',
+		'jquery-mobile': '../bower_components/jquery-mobile/js',
 		'mout': '../bower_components/mout/src',
-		'docCookies': 'libs/docCookies',
-		'dust': 'libs/dust-full-1.1.1',
-		'dust-helpers': 'libs/dust-helpers-1.1.0',
+		'dust': '../bower_components/dustjs-linkedin/dist/dust-full-1.1.1',
+		'dust-helpers': '../bower_components/dustjs-linkedin-helpers/dist/dust-helpers-1.1.1',
 		'rdust': 'libs/require-dust',
-		'iScroll': 'libs/iscroll-lite-4.1.6',
 		'lavaca': 'Lavaca',
 		'Lavaca': 'lavaca'
 	},
@@ -33,4 +29,4 @@ require.config({
 		}
 	}
 });
-require(['es5-shim']);
+require(['app/app']);
